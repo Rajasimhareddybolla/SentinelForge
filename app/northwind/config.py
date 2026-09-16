@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     app_port: int = 8000
 
     # Mock mode for testing without calling external API
-    mock_mode: bool = False
+    mock_mode: bool = os.getenv("MOCK_MODE", "false").lower() in ("true", "1")
 
     # Active defense profile: none, input_only, prompt_hardening, output_only, defense_in_depth
     defense_mode: str = os.getenv("DEFENSE_MODE", "defense_in_depth")

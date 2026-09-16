@@ -39,15 +39,11 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           DEFENSE_MODE: defense_in_depth
         run: |
-          # If GROQ_API_KEY is not configured in repository secrets (e.g. fork PR), run in mock verification mode
           if [ -z "$GROQ_API_KEY" ]; then
-            echo "[!] Notice: GROQ_API_KEY secret not found. Running gate in mock mode to validate architecture..."
-            python -c "
-          import os, asyncio
-          from app.northwind.config import get_settings
-          settings = get_settings()
-          settings.mock_mode = True
-          "
+            echo "[!] Notice: GROQ_API_KEY secret not found in repository. Running in architecture mock mode..."
+            export MOCK_MODE=true
+          else
+            echo "[+] Found GROQ_API_KEY secret. Executing live Groq model evaluation..."
           fi
           python retest.py --mode defense_in_depth --direct --fail-on-regression --github-summary
 
