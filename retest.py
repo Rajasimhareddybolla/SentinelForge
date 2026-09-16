@@ -104,6 +104,16 @@ async def main():
         default=0.5,
         help="Delay between requests in seconds.",
     )
+    parser.add_argument(
+        "--fail-on-regression",
+        action="store_true",
+        help="Exit with non-zero status code if regressions or persistent vulnerabilities are found.",
+    )
+    parser.add_argument(
+        "--github-summary",
+        action="store_true",
+        help="Append Markdown summary table to GITHUB_STEP_SUMMARY for CI dashboard.",
+    )
     args = parser.parse_args()
 
     settings = get_settings()
@@ -181,6 +191,24 @@ async def main():
     print(f"Remediation Rate:      {comparison_summary['remediation_rate']}%")
     print(f"Verification Report:   {comparison_summary['report_path']}")
     print("=================================================================\n")
+
+    # GitHub Actions Step Summary
+    import os
+    summary_file = os.getenv("GITHUB_STEP_SUMMARY")
+    if summary_file and (args.github_summary or True):
+        try:
+            report_text = Path(comparison_summary["report_path"]).read_text(encoding="utf-8")
+            with open(summary_file, "a", encoding="utf-8") as f:
+                f.write(f"\n\n{report_text}\n")
+            print(f"[+] Wrote security summary to GITHUB_STEP_SUMMARY ({summary_file})")
+        except Exception as exc:
+            print(f"[!] Warning: Could not write GITHUB_STEP_SUMMARY: {exc}")
+
+    # CI Regression Failure Gate
+    if args.fail_on_regression:
+        if comparison_summary["regressions"] > 0 or comparison_summary["persistent"] > 0:
+            print("[!] SECURITY GATE TRIGGERED: Regressions or unmitigated vulnerabilities detected!")
+            return 1
 
     return 0
 
