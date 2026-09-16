@@ -47,6 +47,17 @@ jobs:
           fi
           python retest.py --mode defense_in_depth --direct --fail-on-regression --github-summary
 
+      - name: Execute PyRIT Multi-Turn Red-Teaming Scan
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          DEFENSE_MODE: defense_in_depth
+        run: |
+          if [ -z "$GROQ_API_KEY" ]; then
+            echo "[!] Notice: GROQ_API_KEY secret not found in repository. Running PyRIT in mock mode..."
+            export MOCK_MODE=true
+          fi
+          python run_pyrit.py --mode defense_in_depth --direct --fail-on-compromise
+
       - name: Upload Security Assessment Artifacts
         uses: actions/upload-artifact@v4
         if: always()
@@ -55,6 +66,8 @@ jobs:
           path: |
             results/retest_report.md
             results/report.md
+            results/pyrit_report.md
             results/retest/*.json
             results/baseline/*.json
+            results/pyrit/*.json
           retention-days: 30

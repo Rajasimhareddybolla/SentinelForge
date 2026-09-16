@@ -20,10 +20,16 @@ class RetestDirectTarget(BaseTarget):
         self.defense_mode = defense_mode
         self.manager = GuardrailManager()
 
-    async def send_prompt(self, prompt: str):
+    async def send_prompt(
+        self,
+        prompt: str,
+        session_id: Optional[str] = None,
+        defense_mode: Optional[str] = None,
+    ):
         res = await self.manager.process_chat(
             user_message=prompt,
-            defense_mode=self.defense_mode,
+            session_id=session_id,
+            defense_mode=defense_mode or self.defense_mode,
         )
         return {
             "response": res["text"],
@@ -58,9 +64,16 @@ class RetestHttpTarget(BaseTarget):
         except Exception:
             pass
 
-    async def send_prompt(self, prompt: str):
+    async def send_prompt(
+        self,
+        prompt: str,
+        session_id: Optional[str] = None,
+        defense_mode: Optional[str] = None,
+    ):
         url = f"{self.base_url}/chat"
-        payload = {"message": prompt, "defense_mode": self.defense_mode}
+        payload = {"message": prompt, "defense_mode": defense_mode or self.defense_mode}
+        if session_id:
+            payload["session_id"] = session_id
         async with httpx.AsyncClient(timeout=30.0) as client:
             res = await client.post(url, json=payload)
             res.raise_for_status()

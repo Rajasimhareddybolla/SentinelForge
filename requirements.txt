@@ -7,4 +7,5 @@ python-dotenv>=1.0.0
 pyyaml>=6.0
 pytest>=8.0.0
 pytest-asyncio>=0.24.0
-
+pyrit>=1.1.0
+# sqlite3 is included in Python standard library for session history

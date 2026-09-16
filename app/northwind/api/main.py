@@ -120,6 +120,7 @@ async def chat(request: ChatRequest):
     try:
         result = await guardrail_manager.process_chat(
             user_message=request.message,
+            session_id=request.session_id,
             defense_mode=request.defense_mode,
             model=request.model,
         )

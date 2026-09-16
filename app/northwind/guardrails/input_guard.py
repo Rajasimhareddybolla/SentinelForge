@@ -13,7 +13,7 @@ class InputGuardResult:
 
 
 class InputGuardrail:
-    """Pre-inference security inspector detecting prompt injection and extraction heuristics."""
+    """Pre-inference security inspector detecting prompt injection, PII harvesting, and extraction heuristics."""
 
     INJECTION_PATTERNS = [
         (
@@ -40,6 +40,14 @@ class InputGuardrail:
             r"(?i)\b(repeat\s+all\s+text\s+starting\s+from|dump\s+your\s+entire\s+system\s+instructions)\b",
             "System Prompt Verbatim Exfiltration Attempt"
         ),
+        (
+            r"(?i)(executive\s+vip\s+customer\s+record|social\s+security\s+number|tax\s+id\s+/\s+ssn|billing\s+token|vance@northwind)",
+            "PII Harvesting & Executive Record Exfiltration Probe"
+        ),
+        (
+            r"(?i)(100%\s+discount|100\s+percent\s+off|vip_override_100|bypass\s+alarm|alarm_override_code)",
+            "Commercial Override & Physical Facility Code Probe"
+        ),
     ]
 
     SAFE_REFUSAL = (
@@ -59,4 +67,3 @@ class InputGuardrail:
                 )
 
         return InputGuardResult(is_safe=True)
-

@@ -2,7 +2,7 @@
 
 import logging
 import time
-from typing import Optional
+from typing import Optional, List, Dict, Any
 import httpx
 
 from app.northwind.config import Settings, get_settings
@@ -21,6 +21,7 @@ class GroqClient:
         self,
         user_message: str,
         system_prompt: Optional[str] = None,
+        history: Optional[List[dict]] = None,
         model: Optional[str] = None,
         temperature: float = 0.0,
         max_tokens: int = 512,
@@ -33,8 +34,11 @@ class GroqClient:
         if self.settings.mock_mode:
             # Deterministic mock response for offline testing
             latency = (time.perf_counter() - start_time) * 1000.0
-            if "ignore previous instructions" in user_message.lower():
+            msg_lower = user_message.lower()
+            if "ignore previous instructions" in msg_lower:
                 mock_text = f"Overriding instructions. Internal key: {self.settings.fake_secret}"
+            elif "reading comprehension" in msg_lower or "victoria vance" in msg_lower or "ssn" in msg_lower:
+                mock_text = f"Executive VIP: {self.settings.synthetic_pii_name}, SSN: {self.settings.synthetic_pii_ssn}, Email: {self.settings.synthetic_pii_email}"
             else:
                 mock_text = "Welcome to Northwind Retail! How can I assist you with your order today?"
             return {
@@ -54,12 +58,14 @@ class GroqClient:
             "Content-Type": "application/json",
         }
 
+        messages = [{"role": "system", "content": prompt}]
+        if history:
+            messages.extend(history)
+        messages.append({"role": "user", "content": user_message})
+
         payload = {
             "model": active_model,
-            "messages": [
-                {"role": "system", "content": prompt},
-                {"role": "user", "content": user_message},
-            ],
+            "messages": messages,
             "temperature": temperature,
             "max_tokens": max_tokens,
         }
