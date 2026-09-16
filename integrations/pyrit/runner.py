@@ -108,12 +108,16 @@ class PyritScannerAdapter(BaseScannerAdapter):
         out_dir = Path(opts.get("output_dir") or (project_root / "results" / "pyrit"))
         evidence_file = self.save_evidence(scan_output, output_dir=out_dir)
 
-        # Generate and save Markdown report
+        # Generate and save Markdown reports
         report_md = self.generate_report_markdown(scan_output)
         report_path = project_root / "results" / "pyrit_report.md"
         with open(report_path, "w", encoding="utf-8") as f:
             f.write(report_md)
 
-        logger.info("PyRIT scan complete. Evidence: %s | Report: %s", evidence_file, report_path)
+        mode_report_path = project_root / "results" / f"pyrit_report_{defense_mode}.md"
+        with open(mode_report_path, "w", encoding="utf-8") as f:
+            f.write(report_md)
+
+        logger.info("PyRIT scan complete. Evidence: %s | Report: %s | Mode Report: %s", evidence_file, report_path, mode_report_path)
         return scan_output
 
