@@ -47,6 +47,7 @@ class NorthwindPyritTarget(PromptTarget):
         capabilities=TargetCapabilities(
             supports_multi_turn=True,
             supports_system_prompt=True,
+            supports_editable_history=True,
         )
     )
 
@@ -79,6 +80,22 @@ class NorthwindPyritTarget(PromptTarget):
         # Extract transformed or original prompt string
         user_prompt = request_piece.converted_value or request_piece.original_value
         conv_id = request_piece.conversation_id or self.session_id
+
+        # Sync PyRIT's branched conversation state to the target's SessionStore
+        if len(normalized_conversation) > 1:
+            try:
+                from app.northwind.session_store import SessionStore
+                store = SessionStore()
+                existing_hist = store.get_history(conv_id, limit=1)
+                if not existing_hist:
+                    # New branched conversation ID, prepopulate with preceding history
+                    for msg in normalized_conversation[:-1]:
+                        p = msg.get_piece()
+                        val = p.converted_value or p.original_value
+                        if val:
+                            store.add_message(conv_id, p.role, val)
+            except Exception as e:
+                logger.debug("Failed to sync PyRIT history to SessionStore: %s", e)
 
         logger.debug(
             "Sending PyRIT prompt to Northwind [session=%s]: %s",

@@ -100,14 +100,25 @@ Raja has the final decision, but Surya is expected to provide strong technical j
 
 ---
 
-## 7. Use Documentation for Important Communication
+## 7. Documentation & Reporting Standards
 
 For small matters, communicate directly in chat.
 
 For substantial decisions, ambiguities, tradeoffs, questions, or architectural discussions, prefer structured Markdown files in the appropriate `docs/` directory.
 
-Documentation should make important decisions:
+To keep the repository clean and maintainable as we run many security assessments, adhere to the following **Reporting Structure**:
 
+1. **`results/` directory**: This is strictly for raw execution output, logs, and tool-generated artifacts (e.g., JSON evidence files, PyRIT database memory, automated markdown summaries overwritten on each run). Do not put manually written, persistent reports here.
+2. **`reports/` directory**: This is for persistent, human-readable analytical reports documenting major milestones, feature integrations, and security assessment findings.
+    * Use a standardized naming convention: `reports/YYYY-MM-DD_Brief_Topic.md`
+    * Reports should always include:
+        * **Executive Summary:** High-level summary of the integration, goals, and outcomes.
+        * **Technical Implementation:** What was changed, architecturally or programmatically.
+        * **Security Findings & Observations:** How the system behaved (e.g., Guardrails vs LLM baselines).
+        * **How to Recreate & Run:** Explicit command-line instructions.
+        * **Referenced Evidence:** Links to the raw JSON or logs stored in the `results/` directory.
+
+Documentation should make important decisions and test results:
 * Understandable
 * Versionable
 * Reviewable
