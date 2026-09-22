@@ -3,8 +3,8 @@
 import json
 from pathlib import Path
 import pytest
-from engine.orchestrator.retest_comparator import RetestComparator
-from engine.scorers.base import ScoreResult
+from core.orchestrator.retest_comparator import RetestComparator
+from core.scorers.base import ScoreResult
 
 
 def test_retest_comparator_classifies_remediated_and_maintained(tmp_path):

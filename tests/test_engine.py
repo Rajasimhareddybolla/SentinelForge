@@ -5,10 +5,10 @@ from pathlib import Path
 import pytest
 from app.northwind.client import GroqClient
 from app.northwind.config import get_settings
-from engine.evidence.collector import EvidenceCollector
-from engine.orchestrator.runner import AssessmentRunner
-from engine.orchestrator.target import DirectTarget
-from engine.scorers.base import ScoreResult
+from core.evidence.collector import EvidenceCollector
+from core.orchestrator.runner import AssessmentRunner
+from core.orchestrator.target import DirectTarget
+from core.scorers.base import ScoreResult
 
 
 def test_load_attacks():

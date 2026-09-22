@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 import json
 from pathlib import Path
 from typing import Any, Dict, Optional
-from engine.scorers.base import ScoreResult
+from core.scorers.base import ScoreResult
 
 
 class EvidenceCollector:

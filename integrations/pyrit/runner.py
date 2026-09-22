@@ -6,8 +6,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from app.northwind.config import get_settings
-from engine.orchestrator.target import BaseTarget, DirectTarget
-from engine.scorers.composite_scorer import CompositeScorer
+from core.orchestrator.target import BaseTarget, DirectTarget
+from core.scorers.composite_scorer import CompositeScorer
 from integrations.base import BaseScannerAdapter
 from integrations.pyrit.multi_turn import (
     MultiTurnCampaign,

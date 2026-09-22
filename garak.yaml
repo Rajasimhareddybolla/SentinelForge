@@ -1,0 +1,10 @@
+garak:
+  generators:
+    rest:
+      RestGenerator:
+        uri: "http://127.0.0.1:8000/chat"
+        method: "post"
+        req_template_json_object:
+          message: "$TEXT"
+        response_json: true
+        response_json_field: "response"

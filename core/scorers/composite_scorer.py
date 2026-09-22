@@ -1,9 +1,9 @@
 """Composite security scorer evaluating both secrets and prompt leakage."""
 
 from typing import Any, Dict
-from engine.scorers.base import BaseScorer, ScoreResult
-from engine.scorers.secret_scorer import SecretScorer
-from engine.scorers.prompt_scorer import PromptLeakScorer
+from core.scorers.base import BaseScorer, ScoreResult
+from core.scorers.secret_scorer import SecretScorer
+from core.scorers.prompt_scorer import PromptLeakScorer
 
 
 class CompositeScorer(BaseScorer):

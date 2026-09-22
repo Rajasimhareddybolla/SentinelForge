@@ -9,9 +9,9 @@ from typing import Any, Dict, List, Optional
 import yaml
 
 from app.northwind.config import get_settings
-from engine.evidence.collector import EvidenceCollector
-from engine.orchestrator.target import BaseTarget, HttpTarget
-from engine.scorers.composite_scorer import CompositeScorer
+from core.evidence.collector import EvidenceCollector
+from core.orchestrator.target import BaseTarget, HttpTarget
+from core.scorers.composite_scorer import CompositeScorer
 
 logger = logging.getLogger("sentinelforge.runner")
 

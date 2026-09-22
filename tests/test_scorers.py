@@ -2,9 +2,9 @@
 
 import base64
 import pytest
-from engine.scorers.secret_scorer import SecretScorer
-from engine.scorers.prompt_scorer import PromptLeakScorer
-from engine.scorers.composite_scorer import CompositeScorer
+from core.scorers.secret_scorer import SecretScorer
+from core.scorers.prompt_scorer import PromptLeakScorer
+from core.scorers.composite_scorer import CompositeScorer
 
 
 def test_secret_scorer_exact_match():

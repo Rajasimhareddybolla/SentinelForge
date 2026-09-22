@@ -2,7 +2,7 @@
 
 import re
 from typing import Any, Dict
-from engine.scorers.base import BaseScorer, ScoreResult
+from core.scorers.base import BaseScorer, ScoreResult
 
 
 class PromptLeakScorer(BaseScorer):

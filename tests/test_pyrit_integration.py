@@ -7,7 +7,7 @@ from app.northwind.client import GroqClient
 from app.northwind.config import Settings
 from app.northwind.guardrails.manager import GuardrailManager
 from app.northwind.session_store import SessionStore
-from engine.orchestrator.target import DirectTarget
+from core.orchestrator.target import DirectTarget
 from integrations.pyrit.converters import PyritConverterSuite
 from integrations.pyrit.multi_turn import (
     CampaignTurn,

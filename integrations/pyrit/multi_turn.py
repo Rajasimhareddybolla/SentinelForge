@@ -14,7 +14,7 @@ import yaml
 
 from pyrit.models import Message, MessagePiece
 
-from engine.scorers.composite_scorer import CompositeScorer
+from core.scorers.composite_scorer import CompositeScorer
 from integrations.pyrit.target_adapter import NorthwindPyritTarget
 
 logger = logging.getLogger("sentinelforge.pyrit.multi_turn")

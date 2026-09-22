@@ -19,7 +19,7 @@ from pyrit.models import (
 )
 from pyrit.prompt_target import PromptTarget, TargetConfiguration
 
-from engine.orchestrator.target import BaseTarget, DirectTarget
+from core.orchestrator.target import BaseTarget, DirectTarget
 
 logger = logging.getLogger("sentinelforge.pyrit.target")
 
