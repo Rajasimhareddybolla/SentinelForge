@@ -14,11 +14,15 @@ jobs:
   ai-security-evaluation:
     name: Automated AI Red-Teaming & Regression Gate
     runs-on: ubuntu-latest
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
@@ -29,25 +33,20 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install pyrit garak
+          npm install -g promptfoo
 
       - name: Run automated unit tests
         run: |
           python -m pytest tests/ -v
 
-      - name: Execute Red-Team Retest & Enforce Security Gate
+      - name: Execute Regression Suite (Promptfoo)
         env:
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           DEFENSE_MODE: defense_in_depth
         run: |
-          if [ -z "$GROQ_API_KEY" ]; then
-            echo "[!] Notice: GROQ_API_KEY secret not found in repository. Running in architecture mock mode..."
-            export MOCK_MODE=true
-          else
-            echo "[+] Found GROQ_API_KEY secret. Executing live Groq model evaluation..."
-          fi
-          python retest.py --mode defense_in_depth --direct --fail-on-regression --github-summary
+          python main.py scan --tool promptfoo --mode defense_in_depth
 
-      - name: Execute PyRIT Multi-Turn Red-Teaming Scan
+      - name: Execute PyRIT Autonomous Red-Teaming
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           DEFENSE_MODE: defense_in_depth
@@ -56,7 +55,11 @@ jobs:
             echo "[!] Notice: GROQ_API_KEY secret not found in repository. Running PyRIT in mock mode..."
             export MOCK_MODE=true
           fi
-          python run_pyrit.py --mode defense_in_depth --direct --fail-on-compromise
+          python main.py scan --tool pyrit --mode defense_in_depth
+
+      - name: Correlate Findings
+        run: |
+          python main.py correlate
 
       - name: Upload Security Assessment Artifacts
         uses: actions/upload-artifact@v4
@@ -64,10 +67,8 @@ jobs:
         with:
           name: sentinel-forge-security-audit-artifacts
           path: |
-            results/retest_report.md
-            results/report.md
-            results/pyrit_report.md
-            results/retest/*.json
-            results/baseline/*.json
-            results/pyrit/*.json
+            reports/
+            results/promptfoo_report.json
+            results/pyrit/
+            results/garak/
           retention-days: 30

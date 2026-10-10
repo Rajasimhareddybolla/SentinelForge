@@ -126,6 +126,9 @@ def handle_scan(args):
             print(result.stdout)
             if result.stderr:
                 print(result.stderr)
+            if result.returncode != 0:
+                print(f"[ERROR] Promptfoo scan failed with code {result.returncode}.")
+                sys.exit(result.returncode)
             print(f"[SUCCESS] Promptfoo scan complete.")
     finally:
         print("[INFO] Shutting down background target application...")
