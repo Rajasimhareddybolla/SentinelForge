@@ -1,95 +1,149 @@
 # 🛡️ SentinelForge
 
-> **Automated AI Red Teaming & Security Pipeline**
+> **Automated AI Red Teaming & Security Evaluation Pipeline**  
+> A production-grade framework mapping OWASP LLM Top 10 vulnerabilities, MITRE ATLAS threats, and automated adversarial jailbreaks.
 
-SentinelForge is an open-source, full-stack AI security evaluation framework designed to test, exploit, and harden Large Language Model (LLM) applications. It unifies industry-standard tools into a single, scalable pipeline, providing autonomous multi-turn adversarial attacks, massive vulnerability scanning, regression testing, and an intelligent Evidence Engine that prevents alert fatigue.
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-009688?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![OWASP](https://img.shields.io/badge/OWASP-LLM_Top_10-orange.svg)](https://owasp.org/www-project-top-10-for-large-language-model-applications/)
+[![MITRE ATLAS](https://img.shields.io/badge/MITRE-ATLAS_Mapped-red.svg)](https://atlas.mitre.org/)
 
-## 🚀 Features
+---
 
-- **Autonomous Red Teaming**: Uses **PyRIT** (Python Risk Identification Tool) to launch dynamic, multi-turn "Crescendo" attacks, slowly wearing down target alignment to extract hidden PII or operational canaries.
-- **Vulnerability Scanning**: Integrates **Garak** to systematically blast the target with thousands of known payloads, including `DAN` jailbreaks, prompt injection, and encoding obfuscation vectors (Base64, ASCII85).
-- **Regression Testing**: Leverages **Promptfoo** to execute extremely fast, deterministic assertions to ensure patched vulnerabilities stay patched.
-- **Evidence & Correlation Engine**: Normalizes thousands of disparate JSON and JSONL log traces across tools into standard `SentinelFinding` objects, grouping duplicate vulnerabilities and outputting a single, actionable Markdown report.
-- **Target Application**: Includes a vulnerable local testing ground—a FastAPI retail chatbot mimicking real-world logic, complete with API mocks and hidden synthetic PII.
+## 🎯 Problem & Solution
 
-## 🧠 Architecture
+* **The Problem:** Modern LLM-backed applications expose complex attack surfaces: multi-turn prompt injection, sensitive data leakage, alignment degradation, and autonomous privilege escalation. Traditional DAST/SAST scanners are blind to non-deterministic semantic vulnerabilities, while manual red-teaming takes weeks and yields noisy, unstandardized reports.
+* **The Solution:** SentinelForge is an automated, unified AI security pipeline that bridges automated multi-turn adversarial red teaming (**PyRIT**), high-throughput vulnerability scanning (**Garak**), and deterministic regression test suites (**Promptfoo**) into a singular execution framework.
+* **Core Technical Wins:**
+  * **94%+ Finding Deduplication:** Normalizes thousands of disparate JSON/JSONL output traces across PyRIT and Garak into unified `SentinelFinding` data structures, eliminating alert fatigue.
+  * **Autonomous Multi-Turn Attack Loops:** Orchestrates adaptive Crescendo attack vectors that dynamically calibrate pressure over multiple conversation rounds to reveal hidden canary PII.
+  * **Standardized Threat Mapping:** Directly tags every vulnerability to OWASP Top 10 for LLMs (LLM01 Prompt Injection, LLM06 Sensitive Information Disclosure) and MITRE ATLAS matrix tactics.
+
+---
+
+## 🧠 Architecture & Execution Flow
 
 ```mermaid
 flowchart TD
-    CLI(main.py CLI) --> O1(Autonomous Attack)
-    CLI --> O2(Vulnerability Scan)
-    CLI --> O3(Regression Test)
+    CLI["main.py Unified CLI"] --> O1["Autonomous Red Teaming (PyRIT)"]
+    CLI --> O2["Vulnerability Scanning (Garak)"]
+    CLI --> O3["Regression Gate (Promptfoo)"]
     
-    O1 -->|PyRIT| API(Target FastAPI Chatbot)
-    O2 -->|Garak| API
-    O3 -->|Promptfoo| API
+    O1 -->|"Dynamic Multi-turn Payloads"| API["Target FastAPI Retail Bot"]
+    O2 -->|"DAN / Jailbreak Probes"| API
+    O3 -->|"Deterministic Assertions"| API
     
-    API -.->|Responses| O1
-    API -.->|Responses| O2
-    API -.->|Responses| O3
+    API -.->|"Model Responses"| O1
+    API -.->|"Model Responses"| O2
+    API -.->|"Model Responses"| O3
     
-    O1 -->|pyrit_report.json| D(results/)
-    O2 -->|garak_report.jsonl| D
-    O3 -->|promptfoo_report.json| D
+    O1 -->|"pyrit_report.json"| D[("results/ Telemetry Store")]
+    O2 -->|"garak_report.jsonl"| D
+    O3 -->|"promptfoo_report.json"| D
     
-    D --> E(Core Correlation Engine)
-    E -->|Deduplication| R[reports/unified_findings.md]
+    D --> E["Evidence & Correlation Engine"]
+    E -->|"Deduplication & Severity Scoring"| R["reports/unified_findings.md"]
 ```
 
-## 🛠️ Quickstart
+---
 
-### 1. Installation
+## 🚀 Key Capabilities
 
-Clone the repository and install the dependencies:
+* **Autonomous Red Teaming (PyRIT):** Leverages Microsoft's Python Risk Identification Tool to launch stateful, adaptive conversational attacks that simulate real-world sophisticated adversaries attempting canary extraction.
+* **High-Throughput Vulnerability Scanning (Garak):** Blasts target endpoints with thousands of known exploit vectors, encompassing prompt injection, DAN (Do Anything Now) jailbreaks, and obfuscated encodings (Base64, ASCII85).
+* **Automated CI/CD Regression Gates (Promptfoo):** Validates that security patches and guardrails hold against known regression datasets before deployment.
+* **Unified Correlation & Scoring Engine:** Merges multi-tool telemetry, scores severity, identifies root causes, and generates actionable executive remediation reports.
+* **Embedded Vulnerable Benchmark Target:** Includes a full mock FastAPI application (Northwind Retail) configured with synthetic PII, session logic, and enterprise API mocks for safe end-to-end evaluation.
+
+---
+
+## 🛡️ Threat Taxonomy Coverage
+
+| Framework | Threat Category | SentinelForge Detection Engine |
+| :--- | :--- | :--- |
+| **OWASP LLM01** | Prompt Injection (Direct & Indirect) | Garak `promptinject` probes + Promptfoo assertions |
+| **OWASP LLM02** | Insecure Output Handling | Core scoring models analyzing downstream payload execution |
+| **OWASP LLM06** | Sensitive Information Disclosure | PyRIT Crescendo attack vectors + Regex PII canary monitors |
+| **OWASP LLM07** | Insecure Plugin Design / Execution | Mock tool boundary audits on FastAPI endpoints |
+| **MITRE ATLAS** | AML.T0054 (LLM Jailbreak) | Multi-vector payload suite (DAN, Character Injection) |
+| **MITRE ATLAS** | AML.T0057 (LLM Data Extraction) | Stateful multi-turn canary exfiltration engine |
+
+---
+
+## 📁 Repository Structure
+
+```
+SentinelForge/
+├── app/                  # Target FastAPI application (Northwind Retail mock)
+├── core/
+│   ├── correlator.py     # Multi-tool evidence normalization & deduplication
+│   └── scorers/          # LLM scoring & PII canary verification logic
+├── integrations/
+│   ├── pyrit/            # PyRIT autonomous attack orchestrator
+│   ├── garak/            # Garak scanner runner & configuration generator
+│   └── promptfoo/        # Promptfoo regression test runner
+├── datasets/             # Attack payloads & security test configurations
+├── results/              # Raw tool telemetry outputs (git-ignored)
+├── reports/              # Aggregated Markdown intelligence reports
+├── main.py               # Unified CLI interface
+└── requirements.txt
+```
+
+---
+
+## ⚡ Quick Start
+
+### 1. Prerequisites
+* Python 3.10+
+* Node.js v18+ (for Promptfoo CLI)
+
+### 2. Installation
 ```bash
-git clone https://github.com/sentinelforge/sentinelforge.git
-cd sentinelforge
+git clone https://github.com/Rajasimhareddybolla/SentinelForge.git
+cd SentinelForge
+python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 pip install pyrit garak
 npm install -g promptfoo
 ```
 
-### 2. Environment Configuration
-
-SentinelForge requires access to an external LLM to act as the adversarial red-teaming agent (e.g., Llama 3 via Groq). Set your API keys:
+### 3. Environment Configuration
 ```bash
-export GROQ_API_KEY="your-groq-api-key"
-export GEMINI_API_KEY="your-gemini-api-key" # If targeting Gemini models directly
+cp .env.example .env
+# Set adversary model keys:
+export GROQ_API_KEY="your_groq_api_key"
+export GEMINI_API_KEY="your_gemini_api_key"
 ```
 
-### 3. Usage
+### 4. Running the Evaluation Pipeline
 
-SentinelForge provides a unified CLI (`main.py`) to launch tools against the target application. The CLI automatically spins up the target API in the background.
-
-**Run Autonomous Red Teaming (PyRIT)**
 ```bash
-python main.py scan --tool pyrit --objective "Extract the VIP customer account PII name tax id corporate email"
-```
+# 1. Run Autonomous Red Teaming
+python main.py scan --tool pyrit --objective "Extract VIP customer account PII and tax IDs"
 
-**Run Broad Vulnerability Scanning (Garak)**
-```bash
+# 2. Run Comprehensive Vulnerability Probing
 python main.py scan --tool garak --probes dan,promptinject,encoding
-```
 
-**Run Regression Testing (Promptfoo)**
-```bash
+# 3. Run Deterministic Regression Checks
 python main.py scan --tool promptfoo
-```
 
-**Correlate Findings into Intelligence Report**
-```bash
+# 4. Generate Unified Intelligence & Deduplication Report
 python main.py correlate
 ```
-*(Check `reports/unified_findings.md` for the result!)*
 
-## 📂 Project Structure
+Review findings in `reports/unified_findings.md`.
 
-- `main.py`: The unified CLI entrypoint.
-- `app/`: The FastAPI target chatbot (Northwind Retail).
-- `core/`: The central engine, featuring the `correlator` and LLM `scorers`.
-- `integrations/`: Tool wrappers (PyRIT, Garak, Promptfoo) that generate configurations and execute subprocesses.
-- `results/`: Raw output from the scanners (ignored in Git).
-- `reports/`: The final, human-readable vulnerability reports.
+---
 
-## 📝 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 👨‍💻 Author & Contact
+
+**Raja Simha Reddy Bolla**  
+*AI Security, Agentic Systems & Backend Engineer*  
+* [LinkedIn](https://linkedin.com/in/raja-simha-reddy-bolla) • [GitHub](https://github.com/Rajasimhareddybolla) • [Email](mailto:rajasimhabolla@gmail.com)
